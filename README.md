@@ -68,10 +68,3 @@ This project makes use of the Mediapipe library for hand gesture recognition and
 This project is licensed under the MIT License. Refer to the `LICENSE` file for more information.
 
 Feel free to contribute and adapt this project to enhance accessibility and communication for individuals using American Sign Language.
-
-
-## License
-
-This project is licensed under the MIT License. Refer to the `LICENSE` file for more information.
-
-Feel free to contribute and adapt this project to enhance accessibility and communication for individuals using American Sign Language.
