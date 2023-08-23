@@ -61,7 +61,14 @@ pip install numpy pandas matplotlib seaborn keras scikit-learn opencv-python med
 
 ## Acknowledgements
 
-This project makes use of the Mediapipe library for hand gesture recognition and the Google Text-to-Speech (gTTS) library for speech synthesis. The ASL gesture dataset used in this project was obtained from Kaggle.
+This project makes use of the Mediapipe library for hand gesture recognition and the Google Text-to-Speech (gTTS) library for speech synthesis. The ASL gesture dataset used for this project was obtained from [Kaggle](https://www.kaggle.com/datasets/datamunge/sign-language-mnist) and serves as the primary dataset for training and testing the ASL gesture recognition model.
+
+## License
+
+This project is licensed under the MIT License. Refer to the `LICENSE` file for more information.
+
+Feel free to contribute and adapt this project to enhance accessibility and communication for individuals using American Sign Language.
+
 
 ## License
 
