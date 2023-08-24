@@ -1,4 +1,4 @@
-# American Sign Language Recognition Project
+# Sign Language Recognition Project
 
 ![ASL Gesture](sign_mnist/asl_sign.png)
 
