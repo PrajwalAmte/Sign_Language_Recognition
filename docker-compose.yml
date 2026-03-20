@@ -1,16 +1,28 @@
 services:
+  preprocess:
+    build: .
+    command: python -m src.preprocess
+    volumes:
+      - raw-data:/app/data/raw
+      - processed-data:/app/data/processed
+
   train:
     build: .
     command: python -m src.train
     volumes:
+      - processed-data:/app/data/processed
       - model-data:/app/models
       - metrics-data:/app/metrics
       - mlflow-data:/app/mlruns
+    depends_on:
+      preprocess:
+        condition: service_completed_successfully
 
   evaluate:
     build: .
     command: python -m src.evaluate
     volumes:
+      - processed-data:/app/data/processed
       - model-data:/app/models
       - metrics-data:/app/metrics
     depends_on:
@@ -41,3 +53,5 @@ volumes:
   metrics-data:
   mlflow-data:
   logs-data:
+  processed-data:
+  raw-data:

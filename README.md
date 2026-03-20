@@ -46,16 +46,22 @@ python -m src.evaluate
 
 ## Docker
 
+**Note:** On macOS/Docker Desktop, data must be copied into the Docker volume. Recommend running locally instead, or configure Docker Desktop to share the workspace directory.
+
 ```bash
-# Train + evaluate + serve API
-docker compose up api
+# Build image
+docker build -t sign-language-recognition .
 
-# Train only
+# Copy data into volume on macOS (requires data files in ./data/raw/)
+docker run --rm -v sign_language_recognition_raw-data:/app/data/raw -v ./data/raw:/tmp/src alpine cp -r /tmp/src/* /app/data/raw/
+
+# Run pipeline in Docker
+docker compose up preprocess
 docker compose up train
+docker compose up evaluate
 
-# MLflow UI
-docker compose up mlflow
-# Open http://localhost:5000
+# Serve API
+docker compose up api
 ```
 
 ## API Usage

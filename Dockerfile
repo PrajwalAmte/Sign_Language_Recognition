@@ -14,10 +14,6 @@ COPY params.yaml .
 COPY src/ src/
 COPY api/ api/
 COPY monitoring/ monitoring/
-COPY data/raw/ data/raw/
-
-# Preprocess on build so train/evaluate can run immediately
-RUN python -m src.preprocess
 
 EXPOSE 8000
 
