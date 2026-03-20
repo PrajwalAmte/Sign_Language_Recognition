@@ -64,11 +64,23 @@ docker compose up evaluate
 docker compose up api
 ```
 
+## Live Webcam Prediction
+
+```bash
+# Terminal 1 — start the API
+uvicorn api.main:app
+
+# Terminal 2 — open webcam
+python predict_live.py
+```
+
+Controls: **SPACE** to predict, **ESC** to quit.
+
 ## API Usage
 
 ```bash
 # Start the API server
-uvicorn api.main:app --reload
+uvicorn api.main:app
 
 # Health check
 curl http://localhost:8000/health
