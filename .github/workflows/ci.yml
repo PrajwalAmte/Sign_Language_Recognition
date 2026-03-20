@@ -1,0 +1,58 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  train-and-evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Preprocess data
+        run: python -m src.preprocess
+
+      - name: Train model
+        run: python -m src.train
+
+      - name: Evaluate model
+        run: python -m src.evaluate
+
+      - name: Check accuracy gate
+        run: |
+          ACC=$(python -c "import json; print(json.load(open('metrics/eval_metrics.json'))['accuracy'])")
+          echo "Accuracy: $ACC"
+          python -c "
+          import json, sys
+          acc = json.load(open('metrics/eval_metrics.json'))['accuracy']
+          if acc < 0.90:
+              print(f'FAIL: accuracy {acc:.4f} < 0.90')
+              sys.exit(1)
+          print(f'PASS: accuracy {acc:.4f} >= 0.90')
+          "
+
+      - name: Upload metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics
+          path: metrics/
+
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t sign-language-recognition .

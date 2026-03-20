@@ -1,32 +1,102 @@
-# Sign Language Recognition Project
+# Sign Language Recognition
+
+CNN-based American Sign Language (ASL) fingerspelling recognition trained on the [Sign MNIST](https://www.kaggle.com/datamunge/sign-language-mnist) dataset. Recognises 24 static hand signs (A-Y, excluding J and Z which require motion).
+
+## ASL Alphabet Reference
 
 ![ASL Gesture](sign_mnist/asl_sign.png)
 
-## Project Overview
-
-This project focuses on two main parts: training a model to recognize American Sign Language (ASL) gestures using a dataset, and predicting gestures through a camera feed while converting predictions into speech.
-
-## Part 1: Model Training (`model.py`)
-
-The `model.py` script is responsible for training a convolutional neural network (CNN) model to recognize ASL gestures. The key steps include:
-
-1. **Importing necessary libraries.**
-2. **Loading and preprocessing the ASL gesture dataset.**
-3. **Defining and compiling the CNN model architecture.**
-4. **Training the model using the preprocessed dataset.**
-5. **Saving the trained model as `smnist.h5`.**
-
-To train the model, execute:
+## Project Structure
 
 ```
-python model.py
+├── params.yaml              # Centralised hyperparameters
+├── dvc.yaml                 # DVC pipeline (preprocess → train → evaluate)
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+├── src/
+│   ├── preprocess.py        # CSV → normalised .npz arrays
+│   ├── train.py             # CNN training with MLflow tracking
+│   └── evaluate.py          # Classification report & confusion matrix
+├── api/
+│   ├── main.py              # FastAPI endpoints
+│   ├── model.py             # SignPredictor wrapper
+│   └── schemas.py           # Pydantic request/response models
+├── monitoring/
+│   └── logger.py            # JSONL prediction logger
+├── data/raw/                # Sign MNIST CSVs
+└── .github/workflows/ci.yml # CI with accuracy gate
 ```
 
-## Part 2: Gesture Prediction and Speech Conversion (`prediction.py`)
+## Quick Start (Local)
 
-The `prediction.py` script predicts ASL gestures in real-time through a camera feed. It further converts these predictions into speech using the Google Text-to-Speech (gTTS) library. The script's steps are as follows:
+```bash
+python -m venv .venv --python=python3.11
+source .venv/bin/activate
+pip install -r requirements.txt
 
-1. **Importing Required Libraries**: Import the necessary libraries for the script.
+# Run the full pipeline
+dvc repro
+
+# Or step by step
+python -m src.preprocess
+python -m src.train
+python -m src.evaluate
+```
+
+## Docker
+
+```bash
+# Train + evaluate + serve API
+docker compose up api
+
+# Train only
+docker compose up train
+
+# MLflow UI
+docker compose up mlflow
+# Open http://localhost:5000
+```
+
+## API Usage
+
+```bash
+# Start the API server
+uvicorn api.main:app --reload
+
+# Health check
+curl http://localhost:8000/health
+
+# Predict from pixel array
+curl -X POST http://localhost:8000/predict/pixels \
+  -H "Content-Type: application/json" \
+  -d '{"pixels": [0, 0, ..., 255]}'
+
+# Predict from image upload
+curl -X POST http://localhost:8000/predict/image \
+  -F "file=@hand_sign.png"
+```
+
+## Model
+
+| Layer | Output Shape | Params |
+|-------|-------------|--------|
+| Conv2D (75, 3×3) + BN + MaxPool | 14×14×75 | 750 |
+| Conv2D (50, 3×3) + BN + MaxPool | 7×7×50 | 33,800 |
+| Conv2D (25, 3×3) + BN + MaxPool | 4×4×25 | 11,275 |
+| Dense (512) + Dropout (0.3) | 512 | 204,800 |
+| Dense (24, softmax) | 24 | 12,312 |
+
+Total trainable parameters: ~264,000
+
+## Tech Stack
+
+- **TensorFlow / Keras 3** — model training & inference
+- **MLflow** — experiment tracking
+- **FastAPI** — REST API for inference
+- **DVC** — reproducible ML pipeline
+- **Docker** — containerised training & serving
+- **GitHub Actions** — CI with 90% accuracy gate
 
 2. **Loading the Pre-trained CNN Model**: Load the pre-trained CNN model (`smnist.h5`) for gesture recognition.
 

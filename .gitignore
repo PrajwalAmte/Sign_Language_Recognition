@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+mlruns/
+logs/
+data/processed/
+models/
+metrics/
+*.h5
+.dvc/
+*.egg-info/
+dist/
+build/

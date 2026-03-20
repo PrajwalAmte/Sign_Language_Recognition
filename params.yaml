@@ -1,0 +1,29 @@
+train:
+  epochs: 30
+  batch_size: 128
+  learning_rate: 0.001
+  lr_reduction:
+    monitor: val_accuracy
+    patience: 2
+    factor: 0.5
+    min_lr: 0.00001
+
+model:
+  conv_filters: [75, 50, 25]
+  kernel_size: 3
+  dense_units: 512
+  dropout_rate: 0.3
+  conv_dropout_rate: 0.2
+  num_classes: 24
+
+augmentation:
+  rotation_range: 10
+  zoom_range: 0.1
+  width_shift_range: 0.1
+  height_shift_range: 0.1
+
+data:
+  raw_train: data/raw/sign_mnist_train.csv
+  raw_test: data/raw/sign_mnist_test.csv
+  processed_dir: data/processed
+  image_size: 28

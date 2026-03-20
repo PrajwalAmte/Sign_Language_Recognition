@@ -1,0 +1,41 @@
+stages:
+  preprocess:
+    cmd: python -m src.preprocess
+    deps:
+      - src/preprocess.py
+      - data/raw/sign_mnist_train.csv
+      - data/raw/sign_mnist_test.csv
+      - params.yaml
+    params:
+      - data
+    outs:
+      - data/processed/train.npz
+      - data/processed/test.npz
+
+  train:
+    cmd: python -m src.train
+    deps:
+      - src/train.py
+      - data/processed/train.npz
+      - data/processed/test.npz
+      - params.yaml
+    params:
+      - train
+      - model
+      - augmentation
+    outs:
+      - models/smnist.h5
+    metrics:
+      - metrics/train_metrics.json:
+          cache: false
+
+  evaluate:
+    cmd: python -m src.evaluate
+    deps:
+      - src/evaluate.py
+      - models/smnist.h5
+      - data/processed/test.npz
+      - params.yaml
+    metrics:
+      - metrics/eval_metrics.json:
+          cache: false
